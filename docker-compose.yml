@@ -1,0 +1,12 @@
+gearmand:
+  image: ecliptik/gearmand
+worker:
+  image: ecliptik/worker
+  links:
+    - gearmand
+temp:
+  image: ecliptik/temp
+  ports:
+   - "8080:80"
+  links:
+    - gearmand
