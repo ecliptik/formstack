@@ -23,23 +23,23 @@ Containers:
 - [ecliptik/temp](https://hub.docker.com/r/ecliptik/temp/)
   - Apache server with PHP enabled and serving [temp/temp.php]
 
-The 'worker' and 'temp' containers are linked to 'gearmand', which only exposes the gearmand port 4730 to these two containers and nothing else for increased security.
+The `worker` and `temp` containers are linked to `gearmand`, which only exposes the gearmand port 4730 to these two containers and nothing else for increased security.
 
 ## Running Containers Locally
 
 The following three Docker commands will run and link the containers,
 
-'gearmand'
+`gearmand`
 ```
 docker run -d --name gearmand -P ecliptik/gearmand
 ```
 
-'worker'
+`worker`
 ```
 docker run -d --name worker --link gearmand:gearmand ecliptik/worker
 ```
 
-'temp'
+`temp`
 ```
 docker run -d --name temp -p 8080:80 --link gearmand:gearmand ecliptik/temp
 ```
@@ -58,7 +58,7 @@ worker_1   | Waiting for a job...
 
 ## Using the API Stack
 
-When all three containers are running in the stack, the API is available at 'http://localhost:8080/temp?city=CITYNAME', where CITYNAME is the appropriate name of a city.
+When all three containers are running in the stack, the API is available at `http://localhost:8080/temp?city=CITYNAME`, where CITYNAME is the appropriate name of a city.
 
 For example, to get the tempature of San Diego using curl
 ```
@@ -66,7 +66,7 @@ curl "http://localhost:8080/temp.php?city=sandiego"
 {"temp":"79"}
 ```
 
-The logs of the 'worker' and 'temp' containers will show expected process information.
+The logs of the `worker` and `temp` containers will show expected process information.
 
 ## Using With AWS
 
