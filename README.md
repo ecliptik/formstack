@@ -13,7 +13,7 @@ curl "http://localhost/temp.php?city=sandiego"
 
 ## Containers
 
-There are many benefits to using containers for this application stack over a traditional monolithic server install
+There are multiple benefits to using containers for this application stack over a traditional monolithic server install.
 
 - Partitioning of services, following the [Unix Philosophy](http://www.catb.org/esr/writings/taoup/html/ch01s06.html) of doing one thing well
 - Versioned and tagged container images, adding rollback and [blue-green](https://blog.codeship.com/easy-blue-green-deployments-on-amazon-ec2-container-service/) capabilities
@@ -27,15 +27,15 @@ Containers:
 - [ecliptik/gearmand](https://hub.docker.com/r/ecliptik/gearmand/)
   - gearmand job server
 - [ecliptik/worker](https://hub.docker.com/r/ecliptik/worker/)
-  - [worker/worker.php] PHP script to fetch tempatures running in gearmand
+  - [worker.php](worker/worker.php) PHP script to fetch tempatures running in gearmand
 - [ecliptik/temp](https://hub.docker.com/r/ecliptik/temp/)
-  - Apache server with PHP enabled and serving [temp/temp.php]
+  - Apache server with PHP enabled and serving [temp.php](temp/temp.php)
 
 The `worker` and `temp` containers are linked to `gearmand`, which only exposes the gearmand port 4730 to these two containers for increased security. The `worker` and `temp` containers will log to stdout/stderr which is  accessed via the docker logs command.
 
 ## Running in Development Locally
 
-[Docker Compose](https://docs.docker.com/compose/) makes launching the container application stack locally extremely easy and this repository contains a [docker-compose.yml] file that will work identically on a local development and AWS production environment.
+[Docker Compose](https://docs.docker.com/compose/) makes launching the container application stack locally extremely easy and this repository contains a [docker-compose.yml](docker-compose.yml) file that will work identically on a local development and AWS production environment.
 
 ```
 docker-compose up
@@ -106,7 +106,7 @@ Some ideas are,
 
 - Use [memcached](http://memcached.org/) or [redis](http://redis.io/) to cache a tempature value for a period of time, lessening the calls to the upstream tempature provider
 - Dynamically create new gearmand containers when load is increased
-- Re-tool the [worker/worker.php] and [temp/temp.php] gearmand settings to use multiple gearmand containers and dynamically scale on-demand
+- Re-tool the [worker.php](worker/worker.php) and [temp.php](temp/temp.php) gearmand settings to use multiple gearmand containers and dynamically scale on-demand
 - Leverage additional AWS features such as [Amazon Container Service](https://aws.amazon.com/blogs/aws/cloud-container-management/), [Elastic Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_ecs.html), [Cloud Watch](https://aws.amazon.com/cloudwatch/) and other products
 
 ## Additional Information
