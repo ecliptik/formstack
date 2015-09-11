@@ -1,5 +1,5 @@
 # Formstack
-Production ready application Stack for a City Tempature API requested by [Formstack](http://formstack.com)
+Production ready application stack for a City Tempature API requested by [Formstack](http://formstack.com)
 
 ## Description
 
@@ -13,6 +13,14 @@ curl "http://localhost/temp.php?city=sandiego"
 
 ## Containers
 
+There are many benefits to using containers for this application stack over a traditional monolithic server install
+
+- Partitioning of services, following the [Unix Philosophy](http://www.catb.org/esr/writings/taoup/html/ch01s06.html) of doing one thing well
+- Versioned and tagged container images, adding rollback and [blue-green](https://blog.codeship.com/easy-blue-green-deployments-on-amazon-ec2-container-service/) capabilities
+- Consistent, portable, and repeatable infrastructure
+  - containers are [cattle, not pets](https://blog.engineyard.com/2014/pets-vs-cattle)
+- Runs in development and production environments identically across supported Linux operating systems and cloud providers
+
 This application stack is composed of three [Docker](https://www.docker.com/) containers all based on the [Debian Jessie](https://hub.docker.com/_/debian/) official image.
 
 Containers:
@@ -23,29 +31,11 @@ Containers:
 - [ecliptik/temp](https://hub.docker.com/r/ecliptik/temp/)
   - Apache server with PHP enabled and serving [temp/temp.php]
 
-The `worker` and `temp` containers are linked to `gearmand`, which only exposes the gearmand port 4730 to these two containers and nothing else for increased security.
+The `worker` and `temp` containers are linked to `gearmand`, which only exposes the gearmand port 4730 to these two containers for increased security. The `worker` and `temp` containers will log to stdout/stderr which is  accessed via the docker logs command.
 
-## Running Containers Locally
+## Running in Development Locally
 
-The following three Docker commands will run and link the containers,
-
-`gearmand`
-```
-docker run -d --name gearmand -P ecliptik/gearmand
-```
-
-`worker`
-```
-docker run -d --name worker --link gearmand:gearmand ecliptik/worker
-```
-
-`temp`
-```
-docker run -d --name temp -p 80:80 --link gearmand:gearmand ecliptik/temp
-```
-
-## Running Containers with Docker Compose
-[Docker Compose](https://docs.docker.com/compose/) makes launching the container application stack much easier and this repository contains a [docker-compose.yml] file.
+[Docker Compose](https://docs.docker.com/compose/) makes launching the container application stack locally extremely easy and this repository contains a [docker-compose.yml] file that will work identically on a local development and AWS production environment.
 
 ```
 docker-compose up
@@ -56,21 +46,9 @@ Attaching to formstack_gearmand_1, formstack_worker_1, formstack_temp_1
 worker_1   | Waiting for a job...
 ```
 
-## Using the API Stack
+## Running in Production on AWS
 
-When all three containers are running in the stack, the API is available at `http://localhost/temp?city=CITYNAME`, where CITYNAME is the appropriate name of a city.
-
-For example, to get the tempature of San Diego using curl
-```
-curl "http://localhost/temp.php?city=sandiego"
-{"temp":"79"}
-```
-
-The logs of the `worker` and `temp` containers will show expected process information.
-
-## Using With AWS
-
-Using [docker-machine](https://docs.docker.com/machine/) the application stack can quickly deploy the AWS,
+Using [docker-machine](https://docs.docker.com/machine/) the application stack can quickly deploy to AWS for production usage,
 
 - Install docker-machine on your system
 - create a docker user in the IAM console on AWS
@@ -79,7 +57,7 @@ Using [docker-machine](https://docs.docker.com/machine/) the application stack c
 - Find the AWS region and VPC ID
 - Create a new security group called `docker-macine`
   - Open ports 22, 2376, and 80 to 0.0.0.0/0
-- Configure your environment with the docker user security credentials
+- Configure your environment with the docker user security credentials from the IAM console
 
 ```
 export AWS_ACCESS_KEY_ID=<Secret>
@@ -87,7 +65,7 @@ export AWS_SECRET_ACCESS_KEY=<Super_Top_Secret>
 export AWS_VPC_ID=<vpc-ID>
 ```
 
-- Create a new instance `formstack` using docker-machine, and passing the correct zone id (a,b,c,d, etc)
+- Create a new instance named `formstack` using docker-machine, and passing the macthing availability zone id (a,b,c,d, etc) for your VPC,
 
 ```
 docker-machine -D create --driver amazonec2 \
@@ -99,7 +77,7 @@ docker-machine -D create --driver amazonec2 \
 formstack
 ```
 
-- Wait will the instance is created, and when completed re-initialize your enviornment to use the new Docker host
+- Wait will the instance is created, and when completed re-initialize your enviornment to use the new Docker host endpoint,
 ```
 eval "$(docker-machine env formstack)"
 ```
@@ -109,7 +87,7 @@ eval "$(docker-machine env formstack)"
 docker-machine ip formstack
 ```
 
-- Run docker-compose in a detacted on the new instance using the Docker remote TCP connection
+- Run docker-compose detacted on the new instance,
 ```
 docker-compose up -d
 ```
@@ -122,14 +100,14 @@ curl "http://localhost/temp.php?city=sandiego"
 
 ## Future Features
 
-While this repository currently contains a basic stack, there are still many improve performance and reliability.
+This stack is very basic, but allows for consistent, portable, and repeatable deployments in a local development environment and production cloud environment, however there are still many things to do that can improve performance and reliability.
 
 Some ideas are,
 
-- Used [memcached](http://memcached.org/) or [redis](http://redis.io/) to cache a tempature value for a period of time, lessening the calls to the upstream tempature provider
+- Use [memcached](http://memcached.org/) or [redis](http://redis.io/) to cache a tempature value for a period of time, lessening the calls to the upstream tempature provider
 - Dynamically create new gearmand containers when load is increased
 - Re-tool the [worker/worker.php] and [temp/temp.php] gearmand settings to use multiple gearmand containers and dynamically scale on-demand
-- Leverage additional AWS features such as [Amazon Container Service](https://aws.amazon.com/blogs/aws/cloud-container-management/), [Elastic Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_ecs.html) and other products
+- Leverage additional AWS features such as [Amazon Container Service](https://aws.amazon.com/blogs/aws/cloud-container-management/), [Elastic Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_ecs.html), [Cloud Watch](https://aws.amazon.com/cloudwatch/) and other products
 
 ## Additional Information
 
