@@ -1,7 +1,7 @@
 <?php
 
 $worker = new GearmanWorker();
-$worker->addServer();
+$worker->addServer("gearmand", "4730");
 $worker->addFunction('getTemp', 'getTemp');
 
 print "Waiting for a job...\n";
