@@ -70,6 +70,56 @@ The logs of the `worker` and `temp` containers will show expected process inform
 
 ## Using With AWS
 
+Using [docker-machine](https://docs.docker.com/machine/) the application stack can quickly deploy the AWS,
+
+- Install docker-machine on your system
+- create a docker user in the IAM console on AWS
+  - grant full EC2 access
+  - copy it's security credentials
+- Find the AWS region and VPC ID
+- Create a new security group called `docker-macine`
+  - Open ports 22, 2376, and 8080 to 0.0.0.0/0
+- Configure your environment with the docker user security credentials
+
+```
+export AWS_ACCESS_KEY_ID=<Secret>
+export AWS_SECRET_ACCESS_KEY=<Super_Top_Secret>
+export AWS_VPC_ID=<vpc-ID>
+```
+
+- Create a new instance `formstack` using docker-machine, and passing the correct zone id (a,b,c,d, etc)
+
+```
+docker-machine -D create --driver amazonec2 \
+--amazonec2-access-key $AWS_ACCESS_KEY_ID \
+--amazonec2-secret-key $AWS_SECRET_ACCESS_KEY \
+--amazonec2-vpc-id $AWS_VPC_ID \
+--amazonec2-security-group "docker-machine" \
+--amazonec2-zone a \
+formstack
+```
+
+- Wait will the instance is created, and when completed re-initialize your enviornment to use the new Docker host
+```
+eval "$(docker-machine env formstack)"
+```
+
+- Find out the IP of the new instance
+```
+docker-machine ip formstack
+```
+
+- Run docker-compose in a detacted on the new instance using the Docker remote TCP connection
+```
+docker-compose up -d
+```
+
+- When the stack is completed, connect to the API to test
+```
+curl "http://localhost:8080/temp.php?city=sandiego"
+{"temp":"79"}
+```
+
 ## Future Features
 
 While this repository currently contains a basic stack, there are still many improve performance and reliability.
@@ -79,4 +129,9 @@ Some ideas are,
 - Used [memcached](http://memcached.org/) or [redis](http://redis.io/) to cache a tempature value for a period of time, lessening the calls to the upstream tempature provider
 - Dynamically create new gearmand containers when load is increased
 - Re-tool the [worker/worker.php] and [temp/temp.php] gearmand settings to use multiple gearmand containers and dynamically scale on-demand
-- Leverage AWS features such as [Elastic Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_ecs.html)
+- Leverage additional AWS features such as [Amazon Container Service](https://aws.amazon.com/blogs/aws/cloud-container-management/), [Elastic Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_ecs.html) and other products
+
+## Additional Information
+
+- http://networkstatic.net/docker-machine-provisioning-on-aws/
+- https://developer.rackspace.com/blog/dev-to-deploy-with-docker-machine-and-compose/
