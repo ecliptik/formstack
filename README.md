@@ -41,7 +41,7 @@ docker run -d --name worker --link gearmand:gearmand ecliptik/worker
 
 `temp`
 ```
-docker run -d --name temp -p 8080:80 --link gearmand:gearmand ecliptik/temp
+docker run -d --name temp -p 80:80 --link gearmand:gearmand ecliptik/temp
 ```
 
 ## Running Containers with Docker Compose
@@ -58,11 +58,11 @@ worker_1   | Waiting for a job...
 
 ## Using the API Stack
 
-When all three containers are running in the stack, the API is available at `http://localhost:8080/temp?city=CITYNAME`, where CITYNAME is the appropriate name of a city.
+When all three containers are running in the stack, the API is available at `http://localhost/temp?city=CITYNAME`, where CITYNAME is the appropriate name of a city.
 
 For example, to get the tempature of San Diego using curl
 ```
-curl "http://localhost:8080/temp.php?city=sandiego"
+curl "http://localhost/temp.php?city=sandiego"
 {"temp":"79"}
 ```
 
@@ -78,7 +78,7 @@ Using [docker-machine](https://docs.docker.com/machine/) the application stack c
   - copy it's security credentials
 - Find the AWS region and VPC ID
 - Create a new security group called `docker-macine`
-  - Open ports 22, 2376, and 8080 to 0.0.0.0/0
+  - Open ports 22, 2376, and 80 to 0.0.0.0/0
 - Configure your environment with the docker user security credentials
 
 ```
@@ -116,7 +116,7 @@ docker-compose up -d
 
 - When the stack is completed, connect to the API to test
 ```
-curl "http://localhost:8080/temp.php?city=sandiego"
+curl "http://localhost/temp.php?city=sandiego"
 {"temp":"79"}
 ```
 
