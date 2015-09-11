@@ -6,7 +6,7 @@ if (empty($_REQUEST['city'])) {
 }
 
 $gearman = new \GearmanClient();
-$gearman->addServer();
+$gearman->addServer("gearmand", "4730");
 $gearman->setTimeout(1 * 1000);
 $temp = $gearman->doNormal('getTemp', json_encode(array(
   'city' => $_REQUEST['city']
