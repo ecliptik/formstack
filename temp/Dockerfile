@@ -19,8 +19,12 @@ COPY / /var/www/html/
 #Listen on port 80
 EXPOSE 80
 
+#Link stdout/err to apache logs
 RUN ln -sf /dev/stdout /var/log/apache2/access.log
 RUN ln -sf /dev/stderr /var/log/apache2/error.log
+
+#Custom 404 page
+RUN echo "ErrorDocument 404 /404.html" > /etc/apache2/conf-enabled/localized-error-pages.conf
 
 #Run apache
 ENTRYPOINT [ "apache2ctl", "-D", "FOREGROUND" ]
