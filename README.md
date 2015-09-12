@@ -48,11 +48,11 @@ VirtualBox is also highly recommended for local testing on Linux, OSX, and windo
 
 ## Running in Development Locally
 
-As mentioned above, VirtualBox is recommended for local development since it's a cross-platform and consistent across operating systems.
+As mentioned above, VirtualBox is recommended for local development since it's a cross-platform hypervisor and consistent across operating systems.
 
 To run a local VirtualBox copy of this stack,
 
-- install VirtualBox, docker-compose, and docker-machine as detailed earlier
+- Install VirtualBox, docker-compose, and docker-machine as detailed earlier
 - Clone this repository
 - Build a new docker-machine using the VirtualBox Driver and name it `formstack`
   - This will create a new virtual machine named `formstack` that will have Docker pre-configured
@@ -142,7 +142,7 @@ eval "$(docker-machine env formstack)"
 docker-machine ip formstack
 ```
 
-- Run docker-compose detacted on the new instance,
+- Run `docker-compose` to build the stack in daemon mode on the instance,
 ```
 docker-compose up -d
 ```
@@ -154,6 +154,10 @@ curl "http://AWSPUBLICDNSNAME/temp.php?city=sandiego"
 ```
 
 - The stack and VM can now be controlled using `docker-compose` and `docker-machine`
+
+## Known Issues
+
+It appears that the backend API endpoint `api.openweathermap.org` has load issues sometimes, and the time out for gearmand is too low by default and can cause **GEARMAN_TIMEOUT** errors. Increasing `$gearman->setTimeout` in [temp.php](temp/temp.php) appears to alleviate this issue.
 
 ## Future Features
 
