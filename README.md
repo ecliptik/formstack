@@ -35,7 +35,7 @@ The `worker` and `temp` containers are linked to `gearmand`, which only exposes 
 
 ### Installing Docker Compose and Machine
 
-This stack uses [Docker Compose](https://docs.docker.com/compose/) and [docker-machine](https://docs.docker.com/machine/) to orchestrate multiple enviornments locally using [VirtualBox](https://www.virtualbox.org/) and in cloud environments like [AWS](https://aws.amazon.com), [Google Compute Engine](https://cloud.google.com/compute/), [Digital Ocean](https://www.digitalocean.com/) and many others.
+This stack uses [Docker Compose](https://docs.docker.com/compose/) and [Docker Machine](https://docs.docker.com/machine/) to orchestrate multiple enviornments locally using [VirtualBox](https://www.virtualbox.org/) and in cloud environments like [AWS](https://aws.amazon.com), [Google Compute Engine](https://cloud.google.com/compute/), [Digital Ocean](https://www.digitalocean.com/) and many others.
 
 Follow the instructions for installing `docker-compose` and `docker-machine` depending on your platform
 
